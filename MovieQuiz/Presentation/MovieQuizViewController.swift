@@ -231,3 +231,4 @@ final class MovieQuizViewController:
  Вопрос: Рейтинг этого фильма больше чем 6?
  Ответ: НЕТ
 */
+// Sprint 4 submission
