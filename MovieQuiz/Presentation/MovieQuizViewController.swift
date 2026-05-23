@@ -119,7 +119,7 @@ final class MovieQuizViewController:
     
     private func showAnswerResult(isCorrect: Bool) {
         if isCorrect {
-                correctAnswers += 1  gitg
+                correctAnswers += 1  
             }
         
         imageView.layer.masksToBounds = true
