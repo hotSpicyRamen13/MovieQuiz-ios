@@ -11,7 +11,7 @@ final class MovieQuizViewController:
     
     @IBAction private func yesButtonClicked(_ sender: UIButton) {
         let currentQuestion = questions[currentQuestionIndex]
-
+        
         let givenAnswer = true
         
         showAnswerResult(isCorrect: givenAnswer == currentQuestion.correctAnswer)
@@ -34,7 +34,7 @@ final class MovieQuizViewController:
         let currentQuestion = questions[currentQuestionIndex]
         
         let viewModel = convert(model: currentQuestion)
-            show(quiz: viewModel)
+        show(quiz: viewModel)
     }
     
     struct QuizQuestion {
@@ -96,20 +96,58 @@ final class MovieQuizViewController:
     }
     
     private func show(quiz step: QuizStepViewModel) {
+        
+        imageView.layer.borderWidth = 0
+        imageView.layer.borderColor = nil
         imageView.image = step.image
         textLabel.text = step.question
         counterLabel.text = step.questionNumber
     }
-    
-    
+    private func showNextQuestionOrResults() {
+        if currentQuestionIndex == questions.count - 1 {
+            
+         showResultsAlert()
+            
+        } else {
+            
+            currentQuestionIndex += 1
+            let nextQuestion = questions[currentQuestionIndex]
+            let viewModel = convert(model: nextQuestion)
+            show(quiz: viewModel)
+        }
+    }
     
     private func showAnswerResult(isCorrect: Bool) {
         imageView.layer.masksToBounds = true
         imageView.layer.borderWidth = 8
         imageView.layer.cornerRadius = 20
         imageView.layer.borderColor = isCorrect
-            ? UIColor(named: "YP Green (iOS)")?.cgColor
-            : UIColor(named: "YP Red (iOS)")?.cgColor
+        ? UIColor(named: "YP Green (iOS)")?.cgColor
+        : UIColor(named: "YP Red (iOS)")?.cgColor
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {  // ← Здесь точка!
+            self.showNextQuestionOrResults()
+        }
+    }
+    
+    private func showResultsAlert() {
+        let alert = UIAlertController(
+            title: "Квиз завершен!",
+            message: "Правильных ответов: \(correctAnswers) из \(questions.count)",
+            preferredStyle: .alert
+        )
+        let action = UIAlertAction(title: "Сыграть ещё раз",
+            style: .default,
+            handler: { _ in
+            self.currentQuestionIndex = 0
+            self.correctAnswers = 0
+            let firstQuestion = self.questions[self.currentQuestionIndex]
+            let viewModel = self.convert(model: firstQuestion)
+            self.show(quiz: viewModel)
+        }
+        )
+        alert.addAction(action)
+        self.present(alert, animated: true, completion: nil)
     }
     
     
