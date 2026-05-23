@@ -118,6 +118,10 @@ final class MovieQuizViewController:
     }
     
     private func showAnswerResult(isCorrect: Bool) {
+        if isCorrect {
+                correctAnswers += 1  gitg
+            }
+        
         imageView.layer.masksToBounds = true
         imageView.layer.borderWidth = 8
         imageView.layer.cornerRadius = 20
@@ -125,7 +129,7 @@ final class MovieQuizViewController:
         ? UIColor(named: "YP Green (iOS)")?.cgColor
         : UIColor(named: "YP Red (iOS)")?.cgColor
         
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {  // ← Здесь точка!
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
             self.showNextQuestionOrResults()
         }
     }
