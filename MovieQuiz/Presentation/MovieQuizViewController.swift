@@ -9,7 +9,13 @@ final class MovieQuizViewController:
     
     @IBOutlet private var counterLabel: UILabel!
     
+    @IBOutlet private var yesButton: UIButton!
+    
+    @IBOutlet private var noButton: UIButton!
+    
     @IBAction private func yesButtonClicked(_ sender: UIButton) {
+        setButtonsEnabled(false)
+        
         let currentQuestion = questions[currentQuestionIndex]
         
         let givenAnswer = true
@@ -18,6 +24,8 @@ final class MovieQuizViewController:
     }
     
     @IBAction private func noButtonClicked(_ sender: Any) {
+        
+        setButtonsEnabled(false)
         
         let currentQuestion = questions[currentQuestionIndex]
         
@@ -97,6 +105,8 @@ final class MovieQuizViewController:
     
     private func show(quiz step: QuizStepViewModel) {
         
+        imageView.layer.masksToBounds = true
+        imageView.layer.cornerRadius = 20
         imageView.layer.borderWidth = 0
         imageView.layer.borderColor = nil
         imageView.image = step.image
@@ -122,16 +132,21 @@ final class MovieQuizViewController:
                 correctAnswers += 1  
             }
         
-        imageView.layer.masksToBounds = true
         imageView.layer.borderWidth = 8
-        imageView.layer.cornerRadius = 20
         imageView.layer.borderColor = isCorrect
         ? UIColor(named: "YP Green (iOS)")?.cgColor
         : UIColor(named: "YP Red (iOS)")?.cgColor
         
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+            
+            self.setButtonsEnabled(true)
             self.showNextQuestionOrResults()
         }
+    }
+    
+    private func setButtonsEnabled(_ enable: Bool) {
+        yesButton.isEnabled = enable
+        noButton.isEnabled = enable
     }
     
     private func showResultsAlert() {
