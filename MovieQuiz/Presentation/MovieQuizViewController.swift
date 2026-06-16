@@ -16,7 +16,7 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
     private var questionFactory: QuestionFactoryProtocol?
     private let alertPresenter = AlertPresenter()
     private var currentQuestion: QuizQuestion?
-    private var statisticService: StatisticServiceProtocol = StatisticService()
+    private var statisticService: StatisticServiceProtocol!
     
     // MARK: - Actions
     @IBAction private func yesButtonClicked(_ sender: UIButton) {
@@ -38,7 +38,8 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
     // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
-                
+        statisticService = StatisticService()
+        
         let factory = QuestionFactory()
         
         factory.delegate = self
