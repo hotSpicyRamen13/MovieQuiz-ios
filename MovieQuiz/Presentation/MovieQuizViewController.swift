@@ -16,6 +16,7 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
     private var questionFactory: QuestionFactoryProtocol?
     private let alertPresenter = AlertPresenter()
     private var currentQuestion: QuizQuestion?
+    private var statisticService: StatisticServiceProtocol = StatisticService()
     
     // MARK: - Actions
     @IBAction private func yesButtonClicked(_ sender: UIButton) {
@@ -45,6 +46,8 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
         self.questionFactory = factory
         
         questionFactory?.requestNextQuestion()
+        
+        
     }
     
     // MARK: - QuestionFactoryDelegate
@@ -112,13 +115,22 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
     }
     
     private func showResultsAlert() {
+        
+        statisticService.store(correct: correctAnswers, total: questionsAmount)
+        
+        let bestDate = statisticService.bestGame.date.dateTimeString 
+        let statsMessage = """
+        Сыграно игр: \(statisticService.gamesCount)
+        Лучший результат: \(statisticService.bestGame.correct)/\(statisticService.bestGame.total) (\(bestDate))
+        Средняя точность: \(String(format: "%.2f", statisticService.totalAccuracy))%
+        """
+        
         let model = AlertModel(
             title: "Квиз завершен!",
-            message: "Правильных ответов: \(correctAnswers) из \(questionsAmount)",
+            message: "Правильных ответов: \(correctAnswers) из \(questionsAmount)\n\n\(statsMessage)",
             buttonText: "Сыграть ещё раз"
         ) { [weak self] in
             guard let self = self else { return }
-            
             self.currentQuestionIndex = 0
             self.correctAnswers = 0
             self.questionFactory?.reset()
