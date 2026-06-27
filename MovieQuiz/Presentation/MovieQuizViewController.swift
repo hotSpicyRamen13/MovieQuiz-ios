@@ -7,6 +7,7 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
     @IBOutlet private var counterLabel: UILabel!
     @IBOutlet private var yesButton: UIButton!
     @IBOutlet private var noButton: UIButton!
+    @IBOutlet private var activityIndicator: UIActivityIndicatorView!
     
     // MARK: - Properties
     private var currentQuestionIndex = 0
@@ -40,15 +41,12 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
         super.viewDidLoad()
         statisticService = StatisticService()
         
-        let factory = QuestionFactory()
-        
-        factory.delegate = self
-     
+        let moviesLoader = MoviesLoader()
+        let factory = QuestionFactory(moviesLoader: moviesLoader, delegate: self)
         self.questionFactory = factory
         
-        questionFactory?.requestNextQuestion()
-        
-        
+        showLoadingIndicator()
+        questionFactory?.loadData()
     }
     
     // MARK: - QuestionFactoryDelegate
@@ -57,19 +55,23 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
         guard let question = question else {
             return
         }
-
-        currentQuestion = question
-        let viewModel = convert(model: question)
         
         DispatchQueue.main.async { [weak self] in
-            self?.show(quiz: viewModel)
+            guard let self = self else { return }
+            
+            self.activityIndicator.isHidden = true
+            self.activityIndicator.stopAnimating()
+            
+            self.currentQuestion = question
+            let viewModel = self.convert(model: question)
+            self.show(quiz: viewModel)
         }
     }
     
     // MARK: - Conversion
     private func convert(model: QuizQuestion) -> QuizStepViewModel {
         QuizStepViewModel(
-            image: UIImage(named: model.image) ?? UIImage(),
+            image: UIImage(data: model.image) ?? UIImage(),
             question: model.text,
             questionNumber: "\(currentQuestionIndex + 1)/\(questionsAmount)"
         )
@@ -140,4 +142,37 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
         
         alertPresenter.show(in: self, model: model)
     }
+    private func showLoadingIndicator() {
+        activityIndicator.isHidden = false
+        activityIndicator.startAnimating()
+    }
+    private func hideLoadingIndicator() {
+        activityIndicator.isHidden = true
+        activityIndicator.stopAnimating()
+    }
+    private func showNetworkError(message: String) {
+        hideLoadingIndicator()
+        
+        let model = AlertModel(title: "Ошибка",
+                               message: message,
+                               buttonText: "Попробовать еще раз") { [weak self] in
+            guard let self = self else { return }
+            
+            self.currentQuestionIndex = 0
+            self.correctAnswers = 0
+            
+            self.questionFactory?.requestNextQuestion()
+        }
+        
+        alertPresenter.show(in: self, model: model)
+    }
+    // MARK: - QuestionFactoryDelegate
+    
+    func didLoadDataFromServer() {
+        questionFactory?.requestNextQuestion()
+    }
+    func didFailToLoadData(with error: Error) {
+        showNetworkError(message: error.localizedDescription)
+    }
+    
 }

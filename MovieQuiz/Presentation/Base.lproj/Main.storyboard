@@ -23,7 +23,6 @@
                 <viewController id="BYZ-38-t0r" customClass="MovieQuizViewController" customModule="MovieQuiz" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="8bC-Xf-vdC">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
-                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="20" translatesAutoresizingMaskIntoConstraints="NO" id="ll4-uA-1Nd">
                                 <rect key="frame" x="20" y="86" width="374" height="742"/>
@@ -106,17 +105,23 @@
                                     </stackView>
                                 </subviews>
                             </stackView>
+                            <activityIndicatorView opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" style="medium" translatesAutoresizingMaskIntoConstraints="NO" id="UDG-Xa-ifw">
+                                <rect key="frame" x="197" y="438" width="20" height="20"/>
+                            </activityIndicatorView>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
                         <color key="backgroundColor" name="YP Black (iOS)"/>
                         <constraints>
+                            <constraint firstItem="UDG-Xa-ifw" firstAttribute="centerY" secondItem="8bC-Xf-vdC" secondAttribute="centerY" id="7Wm-Ns-67X"/>
                             <constraint firstItem="ll4-uA-1Nd" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" constant="20" id="9dv-eL-X6T"/>
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="top" secondItem="ll4-uA-1Nd" secondAttribute="top" constant="10" id="Ztn-Fz-YbC"/>
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="bottom" secondItem="ll4-uA-1Nd" secondAttribute="bottom" id="bEg-e1-VzC"/>
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="ll4-uA-1Nd" secondAttribute="trailing" constant="20" id="puU-D1-82W"/>
+                            <constraint firstItem="UDG-Xa-ifw" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="rUi-aD-pS7"/>
                         </constraints>
                     </view>
                     <connections>
+                        <outlet property="activityIndicator" destination="UDG-Xa-ifw" id="cHD-aH-iNK"/>
                         <outlet property="counterLabel" destination="KwC-KP-d9a" id="h2p-Rb-iXm"/>
                         <outlet property="imageView" destination="bZh-mq-0tZ" id="vvz-lu-95K"/>
                         <outlet property="noButton" destination="5aM-tc-vTH" id="izw-hQ-fXU"/>
