@@ -21,6 +21,9 @@ final class AlertPresenter {
         }
         
         alert.addAction(action)
-        vc.present(alert, animated: true, completion: nil)
+        
+        DispatchQueue.main.async {
+            vc.present(alert, animated: true, completion: nil)
+        }
     }
 }
