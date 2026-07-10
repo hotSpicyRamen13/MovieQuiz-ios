@@ -23,6 +23,7 @@ final class AlertPresenter {
         alert.addAction(action)
         
         DispatchQueue.main.async {
+            alert.view.accessibilityIdentifier = model.title
             vc.present(alert, animated: true, completion: nil)
         }
     }

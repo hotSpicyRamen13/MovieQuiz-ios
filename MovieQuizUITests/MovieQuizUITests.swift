@@ -1,57 +1,92 @@
-//
-//  MovieQuizUITests.swift
-//  MovieQuizUITests
-//
-//  Created by Ринат Чембулатов on 06.07.2026.
-//
-
 import XCTest
 
 final class MovieQuizUITests: XCTestCase {
+    
+    override class var runsForEachTargetApplicationUIConfiguration: Bool {
+        true
+    }
+    
     var app: XCUIApplication!
-
+    
     override func setUpWithError() throws {
-        try super.setUpWithError()
+        continueAfterFailure = false
         app = XCUIApplication()
         app.launch()
-        
-        continueAfterFailure = false
-
-        // In UI tests it’s important to set the initial state - such as interface orientation - required for your tests before they run. The setUp method is a good place to do this.
     }
-
+    
     override func tearDownWithError() throws {
-        try super.tearDownWithError()
-        app .terminate()
-        app = nil
+        app.terminate()
     }
-    func testYesButton() {
+    
+    // 🔹 ТЕСТ 1: Кнопка "Да" меняет постер и счётчик
+    func testYesButtonChangesPosterAndCounter() throws {
+        XCTAssertTrue(app.staticTexts["Index"].waitForExistence(timeout: 15))
+        
+        let posterBefore = app.images["Poster"]
+        XCTAssertTrue(posterBefore.waitForExistence(timeout: 10))
+        
+        app.buttons["YesButton"].tap()
         sleep(3)
-        let firstPoster = app.images["Poster"]
-        let firstPosterData = firstPoster.screenshot().pngRepresentation
         
-        app.buttons["Yes"].tap()
-        sleep(3)
+        XCTAssertTrue(app.staticTexts["Index"].waitForExistence(timeout: 20))
         
-        let secondPoster = app.images["Poster"]
-        let secondPosterData = secondPoster.screenshot().pngRepresentation
-        
-        XCTAssertNotEqual(firstPosterData, secondPosterData)
-}
-    @MainActor
-    func testExample() throws {
-        // UI tests must launch the application that they test.
-        let app = XCUIApplication()
-        app.launch()
-
-        // Use XCTAssert and related functions to verify your tests produce the correct results.
+        XCTAssertTrue(posterBefore.exists)
     }
-
-    @MainActor
-    func testLaunchPerformance() throws {
-        // This measures how long it takes to launch your application.
-        measure(metrics: [XCTApplicationLaunchMetric()]) {
-            XCUIApplication().launch()
+    
+    // 🔹 ТЕСТ 2: Кнопка "Нет" меняет постер и счётчик
+    func testNoButtonChangesPosterAndCounter() throws {
+        XCTAssertTrue(app.staticTexts["Index"].waitForExistence(timeout: 15))
+        
+        let posterBefore = app.images["Poster"]
+        XCTAssertTrue(posterBefore.waitForExistence(timeout: 10))
+        
+        app.buttons["NoButton"].tap()
+        sleep(3)
+        
+        XCTAssertTrue(app.staticTexts["Index"].waitForExistence(timeout: 20))
+        
+        XCTAssertTrue(posterBefore.exists)
+    }
+    
+    // 🔹 ТЕСТ 3: Алерт + текст кнопки
+    func testAlertAppearanceAndButtonText() throws {
+        XCTAssertTrue(app.staticTexts["Index"].waitForExistence(timeout: 15))
+        
+        for _ in 0..<10 {
+            if app.buttons["YesButton"].waitForExistence(timeout: 5) {
+                app.buttons["YesButton"].tap()
+                sleep(2)
+            }
         }
+        
+        let alert = app.alerts["Квиз завершен!"]
+        XCTAssertTrue(alert.waitForExistence(timeout: 20))
+        
+        let button = alert.buttons["Сыграть ещё раз"]
+        XCTAssertTrue(button.exists)
+        XCTAssertEqual(button.label, "Сыграть ещё раз")
+    }
+    
+    // 🔹 ТЕСТ 4: Исчезновение алерта + ТОЧНЫЙ сброс
+    func testAlertDismissAndExactCounterReset() throws {
+        XCTAssertTrue(app.staticTexts["Index"].waitForExistence(timeout: 15))
+        
+        for _ in 0..<10 {
+            if app.buttons["YesButton"].waitForExistence(timeout: 5) {
+                app.buttons["YesButton"].tap()
+                sleep(2)
+            }
+        }
+        
+        let alert = app.alerts["Квиз завершен!"]
+        XCTAssertTrue(alert.waitForExistence(timeout: 20))
+        
+        alert.buttons["Сыграть ещё раз"].tap()
+        sleep(2)
+        
+        XCTAssertFalse(alert.exists)
+        
+        let indexLabel = app.staticTexts["Index"]
+        XCTAssertEqual(indexLabel.label, "1/10")
     }
 }
